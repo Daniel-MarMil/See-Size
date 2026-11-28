@@ -1,19 +1,22 @@
-use seesize_core::ErrorOnFile;
-use seesize_core::open_directory;
+use seesize_core::AnalyzeDirectoryError;
+use seesize_core::analyze_directory_space;
 use std::path::PathBuf;
 
-fn print_error(err: &ErrorOnFile) {
+fn print_error(err: &AnalyzeDirectoryError) {
     match err {
-        ErrorOnFile::PermissionDenied => {
+        AnalyzeDirectoryError::PermissionDenied => {
             eprintln!("Permission Denied: directory impossible to access")
         }
-        ErrorOnFile::NotADirectory => {
+        AnalyzeDirectoryError::NotADirectory => {
             eprintln!("It's not a directory")
         }
-        ErrorOnFile::NotFound => {
+        AnalyzeDirectoryError::NotFound => {
             eprintln!("Directory not found")
         }
-        ErrorOnFile::UnexpectedError(error) => eprintln!(
+        AnalyzeDirectoryError::InvalidInput => {
+            eprintln!("Invalid input path")
+        }
+        AnalyzeDirectoryError::UnexpectedError(error) => eprintln!(
             "Unexpected error occurred: directory impossible to access. Error data: {}",
             error
         ),
@@ -31,7 +34,7 @@ fn main() {
 
     let path: PathBuf = line_readed.trim().into();
 
-    let result = open_directory(&path);
+    let result = analyze_directory_space(&path);
 
     match result {
         Ok(_) => println!("Directory opened successfully."),
